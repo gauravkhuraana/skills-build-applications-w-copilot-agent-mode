@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from pymongo import MongoClient
+from octofit_tracker.test_data import test_users, test_teams, test_activities, test_leaderboard, test_workouts
 
 class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
@@ -8,39 +9,24 @@ class Command(BaseCommand):
         client = MongoClient('localhost', 27017)
         db = client['octofit_db']
 
-        # Test data for users
-        users = [
-            {"username": "john_doe", "email": "john@example.com", "password": "password123"},
-            {"username": "jane_smith", "email": "jane@example.com", "password": "password123"}
-        ]
-        db.users.insert_many(users)
+        # Populate users
+        db.users.drop()  # Clear existing data
+        db.users.insert_many(test_users)
 
-        # Test data for teams
-        teams = [
-            {"name": "Team Alpha", "members": [users[0]["_id"]]},
-            {"name": "Team Beta", "members": [users[1]["_id"]]}
-        ]
-        db.teams.insert_many(teams)
+        # Populate teams
+        db.teams.drop()
+        db.teams.insert_many(test_teams)
 
-        # Test data for activities
-        activities = [
-            {"user": users[0]["_id"], "activity_type": "running", "duration": 30},
-            {"user": users[1]["_id"], "activity_type": "walking", "duration": 45}
-        ]
-        db.activity.insert_many(activities)
+        # Populate activities
+        db.activities.drop()
+        db.activities.insert_many(test_activities)
 
-        # Test data for leaderboard
-        leaderboard = [
-            {"user": users[0]["_id"], "score": 100},
-            {"user": users[1]["_id"], "score": 80}
-        ]
-        db.leaderboard.insert_many(leaderboard)
+        # Populate leaderboard
+        db.leaderboard.drop()
+        db.leaderboard.insert_many(test_leaderboard)
 
-        # Test data for workouts
-        workouts = [
-            {"name": "Morning Run", "description": "A quick 5km run to start the day."},
-            {"name": "Evening Yoga", "description": "Relaxing yoga session to wind down."}
-        ]
-        db.workouts.insert_many(workouts)
+        # Populate workouts
+        db.workouts.drop()
+        db.workouts.insert_many(test_workouts)
 
-        self.stdout.write(self.style.SUCCESS('Successfully populated the database with test data'))
+        self.stdout.write(self.style.SUCCESS('Database populated successfully with test data.'))
