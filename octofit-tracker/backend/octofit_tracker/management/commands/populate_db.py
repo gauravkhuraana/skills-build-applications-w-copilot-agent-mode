@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from pymongo import MongoClient
-from octofit_tracker.test_data import test_users, test_teams, test_activities, test_leaderboard, test_workouts
 
 class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
@@ -9,24 +8,51 @@ class Command(BaseCommand):
         client = MongoClient('localhost', 27017)
         db = client['octofit_db']
 
-        # Populate users
-        db.users.drop()  # Clear existing data
-        db.users.insert_many(test_users)
+        # Test data for users
+        users = [
+            {"username": "thundergod", "email": "thundergod@mhigh.edu", "password": "thundergodpassword"},
+            {"username": "metalgeek", "email": "metalgeek@mhigh.edu", "password": "metalgeekpassword"},
+            {"username": "zerocool", "email": "zerocool@mhigh.edu", "password": "zerocoolpassword"},
+            {"username": "crashoverride", "email": "crashoverride@hmhigh.edu", "password": "crashoverridepassword"},
+            {"username": "sleeptoken", "email": "sleeptoken@mhigh.edu", "password": "sleeptokenpassword"},
+        ]
+        db.users.insert_many(users)
 
-        # Populate teams
-        db.teams.drop()
-        db.teams.insert_many(test_teams)
+        # Test data for teams
+        teams = [
+            {"name": "Blue Team", "members": [users[0]["_id"], users[1]["_id"]]},
+            {"name": "Gold Team", "members": [users[2]["_id"], users[3]["_id"], users[4]["_id"]]},
+        ]
+        db.teams.insert_many(teams)
 
-        # Populate activities
-        db.activities.drop()
-        db.activities.insert_many(test_activities)
+        # Test data for activities
+        activities = [
+            {"user": users[0]["_id"], "activity_type": "Cycling", "duration": 60},
+            {"user": users[1]["_id"], "activity_type": "Crossfit", "duration": 120},
+            {"user": users[2]["_id"], "activity_type": "Running", "duration": 90},
+            {"user": users[3]["_id"], "activity_type": "Strength", "duration": 30},
+            {"user": users[4]["_id"], "activity_type": "Swimming", "duration": 75},
+        ]
+        db.activities.insert_many(activities)
 
-        # Populate leaderboard
-        db.leaderboard.drop()
-        db.leaderboard.insert_many(test_leaderboard)
+        # Test data for leaderboard
+        leaderboard = [
+            {"user": users[0]["_id"], "score": 100},
+            {"user": users[1]["_id"], "score": 90},
+            {"user": users[2]["_id"], "score": 95},
+            {"user": users[3]["_id"], "score": 85},
+            {"user": users[4]["_id"], "score": 80},
+        ]
+        db.leaderboard.insert_many(leaderboard)
 
-        # Populate workouts
-        db.workouts.drop()
-        db.workouts.insert_many(test_workouts)
+        # Test data for workouts
+        workouts = [
+            {"name": "Cycling Training", "description": "Training for a road cycling event"},
+            {"name": "Crossfit", "description": "Training for a crossfit competition"},
+            {"name": "Running Training", "description": "Training for a marathon"},
+            {"name": "Strength Training", "description": "Training for strength"},
+            {"name": "Swimming Training", "description": "Training for a swimming competition"},
+        ]
+        db.workouts.insert_many(workouts)
 
-        self.stdout.write(self.style.SUCCESS('Database populated successfully with test data.'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated the database with test data.'))
